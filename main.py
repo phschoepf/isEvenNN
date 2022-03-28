@@ -15,7 +15,7 @@ submit = form.form_submit_button("Submit number")
 
 if submit:
     evenNN = IsEvenNN()
-    evenNN.net.load_state_dict(torch.load("isEvenModel.pt"))
+    evenNN.net.load_state_dict(torch.load("isEvenModel.pt", map_location=torch.device("cpu")))
     try:
         res, conf = evenNN.predict_single(number_input)
         message = f'{number_input} is {"" if res else "not "}even! (confidence {conf:.3f})'

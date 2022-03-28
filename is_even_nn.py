@@ -3,6 +3,7 @@ import random
 import struct
 from torch import nn
 from torch.utils.data import TensorDataset, DataLoader
+from typing import Union
 
 
 class IsEvenNN(object):
@@ -58,7 +59,7 @@ class IsEvenNN(object):
             predictions = [y > 0.5 for y in outputs]  # boolean predictions
             return predictions, outputs if extras else predictions
 
-    def accuracy(self, xtest: list[list[float]], ytest: list[float | bool]) -> float:
+    def accuracy(self, xtest: list[list[float]], ytest: list[Union[float, bool]]) -> float:
         preds = self.predict(xtest)
         if type(ytest) == list[float]:
             ytest = [y > 0.5 for y in ytest]  # convert ground truths to boolean
@@ -68,7 +69,7 @@ class IsEvenNN(object):
     def predict_single(self, number) -> tuple[bool, float]:
         """Predict a single number. Any format that can be understood by int() is accepted."""
         bits = binary_int(int(number))
-        if len(bits) is not 32:
+        if len(bits) != 32:
             raise IndexError(f"Could not convert {number} to 32-bit int")
         outputs, conf = self.predict([bits], extras=True)
         return outputs[0], conf[0]
