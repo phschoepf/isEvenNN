@@ -68,6 +68,8 @@ class IsEvenNN(object):
     def predict_single(self, number) -> tuple[bool, float]:
         """Predict a single number. Any format that can be understood by int() is accepted."""
         bits = binary_int(int(number))
+        if len(bits) is not 32:
+            raise IndexError(f"Could not convert {number} to 32-bit int")
         outputs, conf = self.predict([bits], extras=True)
         return outputs[0], conf[0]
 

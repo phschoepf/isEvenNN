@@ -17,11 +17,15 @@ if submit:
     evenNN = IsEvenNN()
     evenNN.net.load_state_dict(torch.load("isEvenModel.pt"))
     try:
-        res = evenNN.predict_single(number_input)
-        st.balloons()
+        res, conf = evenNN.predict_single(number_input)
+        message = f'{number_input} is {"" if res else "not "}even! (confidence {conf:.3f})'
         if res:
-            right.success(f"{number_input} is even!")
+            right.success(message)
         else:
-            right.error(f"{number_input} is not even!")
+            right.error(message)
+    except IndexError as ie:
+        right.error(f"Failed to process \"{number_input}\" ({ie.__class__.__name__}: {ie})")
+    except ValueError as ve:
+        right.error(f"Failed to process \"{number_input}\" ({ve.__class__.__name__}: {ve})")
     except Exception as e:
-        right.error(f"Did not understand input {number_input} ({e.__class__.__name__})")
+        right.error(f"Failed to process \"{number_input}\" (Unknown Error)")
