@@ -4,15 +4,15 @@ if __name__ == "__main__":
     TYPE = "int"
 
     if TYPE == "float":
-        _, tdata, tlabels = generate_floats(100000)
+        _, tdata, tlabels = generate_floats(int(1e5))
         _, edata, elabels = generate_floats(100)
-    if TYPE == "int":
-        _, tdata, tlabels = generate_ints(100000)
+    elif TYPE == "int":
+        _, tdata, tlabels = generate_ints(int(1e5))
         _, edata, elabels = generate_ints(100)
     else:
         raise NotImplementedError("Unknown type " + TYPE)
 
     net = IsEvenNN()
-    net.train(tdata, tlabels, 10)
+    net.train(tdata, tlabels, 40)
     torch.save(net.net.state_dict(), "isEvenModel.pt")
     net.predict(edata)

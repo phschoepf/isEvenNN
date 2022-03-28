@@ -9,14 +9,14 @@ class IsEvenNN(object):
     def __init__(self, optimizer=torch.optim.Adam, criterion=nn.L1Loss()):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.net = nn.Sequential(
-            nn.Linear(32, 1),
-            # nn.ReLU(),
-            # nn.Linear(64, 64),
-            # nn.ReLU(),
-            # nn.Linear(64, 16),
-            # nn.ReLU(),
-            # nn.Linear(16, 1),
-            nn.Tanh()
+            nn.Linear(32, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 16),
+            nn.ReLU(),
+            nn.Linear(16, 1),
+            nn.Sigmoid()
         )
         self.net.to(self.device)
         self.optimizer = optimizer(self.net.parameters())
@@ -43,7 +43,7 @@ class IsEvenNN(object):
                 # print statistics
                 running_loss += loss.item()
                 if i % 2000 == 1999:  # print every 2000 mini-batches
-                    print(f'[{epoch}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+                    print(f'[{epoch}, {i + 1:5d}] loss: {running_loss / 2000:.3e}')
                     running_loss = 0.0
 
         print('Finished Training')
@@ -61,6 +61,12 @@ class IsEvenNN(object):
             ytest = [y > 0.5 for y in ytest]  # convert ground truths to boolean
         corrects = [x == y for x, y in zip(preds, ytest)]
         return sum(corrects)/len(corrects)
+
+    def predict_single(self, number) -> bool:
+        """Predict a single number. Any format that can be understood by int() is accepted."""
+        bits = binary_int(int(number))
+        outputs = self.predict([bits])
+        return outputs[0]
 
     def __call__(self, *args, **kwargs):
         return self.net(*args, **kwargs)
