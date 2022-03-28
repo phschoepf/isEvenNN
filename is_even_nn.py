@@ -48,12 +48,15 @@ class IsEvenNN(object):
 
         print('Finished Training')
 
-    def predict(self, xtest: list[list[float]]) -> list[bool]:
+    def predict(self, xtest: list[list[float]], extras=False):
         self.net.eval()
         xtest_tensor = torch.tensor(xtest, device=self.device)
         with torch.no_grad():
             outputs = self.net(xtest_tensor).squeeze().tolist()  # float outputs of the network
-            return [y > 0.5 for y in outputs]  # boolean predictions
+            if type(outputs) is not list:
+                outputs = [outputs]
+            predictions = [y > 0.5 for y in outputs]  # boolean predictions
+            return predictions, outputs if extras else predictions
 
     def accuracy(self, xtest: list[list[float]], ytest: list[float | bool]) -> float:
         preds = self.predict(xtest)
@@ -62,11 +65,11 @@ class IsEvenNN(object):
         corrects = [x == y for x, y in zip(preds, ytest)]
         return sum(corrects)/len(corrects)
 
-    def predict_single(self, number) -> bool:
+    def predict_single(self, number) -> tuple[bool, float]:
         """Predict a single number. Any format that can be understood by int() is accepted."""
         bits = binary_int(int(number))
-        outputs = self.predict([bits])
-        return outputs[0]
+        outputs, conf = self.predict([bits], extras=True)
+        return outputs[0], conf[0]
 
     def __call__(self, *args, **kwargs):
         return self.net(*args, **kwargs)
